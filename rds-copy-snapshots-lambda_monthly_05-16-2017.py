@@ -15,7 +15,6 @@ SNAP_NAME_PREFX="mo-"
 # AWS region in which the db instances exist
 REGION = "us-east-1"
 
-# ensure all snaps return a SnapshotCreateTime - Snapshots in progress will not have a timestamp until completed
 
 
 def copy_snapshots(rds, snaps, dbarn):
@@ -42,8 +41,7 @@ def purge_snapshots(rds, id, snaps, counts):
     print("---- RESULTS FOR {} ({} snapshots) ----".format(id, len(snaps)))
 
     for snap in snaps:
-        snap_date = snap['SnapshotCreateTime']
-            
+        snap_date = snap['SnapshotCreateTime']   
         snap_age = NOW - snap_date
         # Monthly
         type_str = "month"
@@ -92,6 +90,7 @@ def get_snaps_filtered(rds, instance, snap_type):
     snapshots=filter(lambda x: x['Status'].startswith(str_status_type), snapshots)  #filter snaps based on status=available - returning only snaps that not creating or deleting
     snapshots=filter(lambda x: x['DBSnapshotIdentifier'].startswith(SNAP_NAME_PREFX), snapshots)  #filter the snapshots based on the the first letters of the DBSnapshotIdentifier
     return sorted(snapshots, key=lambda x: x['SnapshotCreateTime'])
+    
 def get_snaps(rds, instance, snap_type):
     if len(INSTANCES) == INSTANCES.count("all"):
         snapshots = rds.describe_db_snapshots(
@@ -100,8 +99,6 @@ def get_snaps(rds, instance, snap_type):
         snapshots = rds.describe_db_snapshots(
                     SnapshotType=snap_type,
                     DBInstanceIdentifier=instance)['DBSnapshots']
-#        print( "DBSnapshots:", snapshots )
-#        print( "")
     snapshots=filter(lambda x: x['Status'].startswith('avail'), snapshots)  #filter snaps based on status=available - returning only snaps that not creating or deleting
     return sorted(snapshots, key=lambda x: x['SnapshotCreateTime'])
 
