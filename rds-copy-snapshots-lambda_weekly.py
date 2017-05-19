@@ -4,7 +4,7 @@ from boto3 import client
 
 # List of database identifiers, or "all" for all databases
 # eg. ["db-name1", "db-name2"] or ["all"]
-INSTANCES = ["sql-unanet-01"]
+INSTANCES = ["db-name-01"]
 
 # The number of weeks to keep ONE snapshot per week
 WEEKS = 14
