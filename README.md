@@ -54,3 +54,7 @@ You can test the function from the Lambda console. Click the Actions button and 
 
 #### CloudWatch logs
 You will be able to see the output when the script runs in the CloudWatch logs. Go to the CloudWatch service in the AWS Management console. Click on Logs and you will see the rds-copy-snapshots log group. Click in it and you will see a Log Stream for every time the script is executed which contains all the output of the script. Go back to the Log Group and click the Never Expire link in the Expire Events After column of the log group row. Change the Retention period to what you feel comfortable with.
+
+### CloudWatch Alarms
+You can configure a SNS Topic and CloudWatch Alarms to monitor the Lambda functions for errors. Go to the SNS console and create a topic and subscription (email, SMS, etc). Next, go to the CloudWatch console and create an alarm for the Lambda functions error event.  Set the alarm "Whenever" event to =>1 for 1 consectutive periods over a 1 day period. Set the Statistic to standard and sum, and set the notification to the SNS topic ARN.  
+
