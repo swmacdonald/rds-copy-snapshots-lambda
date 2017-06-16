@@ -10,22 +10,21 @@ INSTANCES = ["db-name-01"]
 WEEKS = 14
 
 # three character prefix for snapshot naming : "mo-" = monthly "wk-" = weekly
-SNAP_NAME_PREFX="wk-"
+SNAP_NAME_PREFX = "wk-"
 
 # AWS region in which the db instances exist
 REGION = "us-east-1"
-
 
 
 def copy_snapshots(rds, snaps, dbarn):
     newest = snaps[-1]
     response = rds.list_tags_for_resource(ResourceName=dbarn)
     rdstags = response['TagList']
-    rdstags.append({ 'Key': 'backup_type', 'Value': 'weekly' })
+    rdstags.append({'Key': 'backup_type', 'Value': 'weekly'})
     rds.copy_db_snapshot(
         SourceDBSnapshotIdentifier=newest['DBSnapshotIdentifier'],
         TargetDBSnapshotIdentifier=SNAP_NAME_PREFX + newest['DBSnapshotIdentifier'][4:],
-        Tags= rdstags)
+        Tags=rdstags)
     print("Snapshot {} copied to {}".format(
           newest['DBSnapshotIdentifier'],
           SNAP_NAME_PREFX + newest['DBSnapshotIdentifier'][4:])
@@ -79,7 +78,7 @@ def purge_snapshots(rds, id, snaps, counts):
 
 
 def get_snaps_filtered(rds, instance, snap_type):
-    str_status_type="avail"
+    str_status_type = "avail"
     if len(INSTANCES) == INSTANCES.count("all"):
         snapshots = rds.describe_db_snapshots(
                     SnapshotType=snap_type)['DBSnapshots']
@@ -87,9 +86,10 @@ def get_snaps_filtered(rds, instance, snap_type):
         snapshots = rds.describe_db_snapshots(
                     SnapshotType=snap_type,
                     DBInstanceIdentifier=instance)['DBSnapshots']
-    snapshots=filter(lambda x: x['Status'].startswith(str_status_type), snapshots)  #filter snaps based on status=available - returning only snaps that not creating or deleting
-    snapshots=filter(lambda x: x['DBSnapshotIdentifier'].startswith(SNAP_NAME_PREFX), snapshots)  #filter the snapshots based on the the first letters of the DBSnapshotIdentifier
+    snapshots = filter(lambda x: x['Status'].startswith(str_status_type), snapshots)  # filter snaps based on status=available - returning only snaps that not creating or deleting
+    snapshots = filter(lambda x: x['DBSnapshotIdentifier'].startswith(SNAP_NAME_PREFX), snapshots)  # filter the snapshots based on the the first letters of the DBSnapshotIdentifier
     return sorted(snapshots, key=lambda x: x['SnapshotCreateTime'])
+
 
 def get_snaps(rds, instance, snap_type):
     if len(INSTANCES) == INSTANCES.count("all"):
@@ -99,7 +99,7 @@ def get_snaps(rds, instance, snap_type):
         snapshots = rds.describe_db_snapshots(
                     SnapshotType=snap_type,
                     DBInstanceIdentifier=instance)['DBSnapshots']
-    snapshots=filter(lambda x: x['Status'].startswith('avail'), snapshots)  #filter snaps based on status=available - returning only snaps that not creating or deleting
+    snapshots = filter(lambda x: x['Status'].startswith('avail'), snapshots)  # filter snaps based on status=available - returning only snaps that not creating or deleting
     return sorted(snapshots, key=lambda x: x['SnapshotCreateTime'])
 
 
@@ -144,9 +144,9 @@ def main(event, context):
                       )
             snapshots_manual = get_snaps_filtered(rds, instance, 'manual')
             if snapshots_manual:
-                print("\nNumber of Weekly Snaps to retain = ",WEEKS," \n" )
+                print("\nNumber of Weekly Snaps to retain = ",WEEKS," \n")
                 print("Script start time is: ",NOW," \n")
-                print("Snapshots will be deleted prior to: ",DELETE_BEFORE_DATE," \n" ) 
+                print("Snapshots will be deleted prior to: ",DELETE_BEFORE_DATE," \n")
                 purge_snapshots(rds, instance,
                                 snapshots_manual, instance_counts)
                 print_summary(instance_counts)
