@@ -15,7 +15,9 @@
             "Action": [
                 "rds:DescribeDBSnapshots",
                 "rds:DeleteDBSnapshot",
-                "rds:CopyDBSnapshot"
+                "rds:CopyDBSnapshot",
+                "rds:DescribeDBInstances",
+                "rds:ListTagsForResource"
             ],
             "Resource": "*"
         }
