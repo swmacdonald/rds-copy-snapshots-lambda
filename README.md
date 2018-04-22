@@ -21,7 +21,7 @@ eg. "us-east-1"
 
 ## Configure Lambda function
 ### IAM Role Policy
-Go to the IAM service in the AWS Management console. Click on Roles and click the Create New Role button. Name the role rds-copy-snapshots and click Next Step. Click the Select button that is next to the AWS Lambda service. On the Attach Policy page, don't check any boxes and just click Next Step. Click Create Role. Click on the newly created role and expand the Inline Policies and click where it says click here to create a new policy. Click Custom Policy and click Select. Name the policy rds-copy-snapshots. Copy the contents of the iam_role_policy.json file and paste it in the Policy Document box and click Apply Policy.
+Go to the IAM service in the AWS Management console. Click on Roles and click the Create Role button. Choose Lambda and click next. On the Attach permissions policies page, don't check any boxes and just click Next Step. Name the role rds-copy-snapshots-role and click Create role. Click on the newly created role and click where it says Add inline policy. Switch to JSON tab. Copy the contents of the iam_role_policy.json file and paste it in the Policy Document box. Name the policy rds-copy-snapshots-policy and click Create policy.
 
 ### Create Lambda function
 #### Configure function
@@ -29,7 +29,7 @@ Go to the Lambda service in the AWS Management console. Create a new function an
 
 * Name: rds-copy-snapshots-TYPE - e.g. rds-copy-snapshots-weekly
 * Runtime: Python 2.7
-* Role: rds-copy-snapshots
+* Role: rds-copy-snapshots-role
 
 Click 'Create function'. Then on the next pagefill in the following details:
 * Description: An AWS Lambda function that makes a copy of the most recent auto snapshot and deletes ones older than a set number of [months/weeks]
@@ -40,15 +40,18 @@ Click 'Create function'. Then on the next pagefill in the following details:
 In the Code tab, configure the variables at the top of the script to your desired configuration. Click Save.
 
 #### Configure Triggers
-Click the Configure triggers tab in the left navigator and click inside the dashed square box to choose the trigger source. Choose the type CloudWatch-Scheduled event and fill in the following details:
-* Name: rds-copy-snapshots
+In the left navigator of Designer, at the top, choose CloudWatch Events and fill in the following details in Configure triggers:
+* Rule: Create a new rule
+* Rule name: rds-copy-snapshots-rule
 * Description: Run script [monthly/weekly]
+* Rule Type: Schedule expression
 * Schedule Expression (Monthly): `cron(30 11 1 * ? *)`  = Your function will run on the first day of every month at 11:30 UTC.
 	or
 * Schedule Expression (Weekly):	 `cron(40 09 ? * SUN *)` = Your function will run on the Sunday every week at 09:40 UTC.
-* Click submit.
+* Check that Enable trigger is checked
+* Click Add.
 
- You should change the time to be after your backup window configured on your db instances.
+You should change the time to be after your backup window configured on your db instances.
 
 #### Test function
 You can test the function from the Lambda console. Click the Actions button and select Configure test event. Choose Scheduled Event from the drop down.  Configure the time of the simulated scheduled event to the current time in UTC.  Add the following parameter to the structure "noop": "True".  This will tell the script to not actually delete any snapshots, but to print that it would have. Now you can press the Save and Test button and you will see the results of the script running in the Lambda console.
@@ -58,4 +61,3 @@ You will be able to see the output when the script runs in the CloudWatch logs. 
 
 ### CloudWatch Alarms
 You can configure a SNS Topic and CloudWatch Alarms to monitor the Lambda functions for errors. Go to the SNS console and create a topic and subscription (email, SMS, etc). Next, go to the CloudWatch console and create an alarm for the Lambda functions error event.  Set the alarm "Whenever" event to =>1 for 1 consectutive periods over a 1 day period. Set the Statistic to standard and sum, and set the notification to the SNS topic ARN.
-
