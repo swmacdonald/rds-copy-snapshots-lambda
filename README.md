@@ -1,8 +1,8 @@
 # rds-copy-snapshots-lambda
 Makes a copy of the most recent auto snapshot and deletes ones older than the set retention period.
 
-There are two versions of the script: a weekly version and a monthly version.
-You can choose to use only weekly, monthly, or both of them as you see fit.
+There are three versions of the script: a weekly, monthly , and an aurora cluster monthly version.
+You can choose to use only weekly, monthly, cluster or all of them as you see fit.
 
 Weekly and Monthly Snapshots are named and tagged differently to allow for filtering by type as well as to prevent inadvertent deletion.
 

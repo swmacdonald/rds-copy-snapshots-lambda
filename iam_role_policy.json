@@ -17,7 +17,11 @@
                 "rds:DeleteDBSnapshot",
                 "rds:CopyDBSnapshot",
                 "rds:DescribeDBInstances",
-                "rds:ListTagsForResource"
+                "rds:ListTagsForResource",
+                "rds:DescribeDBClusterSnapshots",
+                "rds:DeleteDBClusterSnapshot",
+                "rds:CopyDBClusterSnapshot",
+                "rds:DescribeDBClusters",
             ],
             "Resource": "*"
         }
