@@ -21,7 +21,7 @@
                 "rds:DescribeDBClusterSnapshots",
                 "rds:DeleteDBClusterSnapshot",
                 "rds:CopyDBClusterSnapshot",
-                "rds:DescribeDBClusters",
+                "rds:DescribeDBClusters"
             ],
             "Resource": "*"
         }
